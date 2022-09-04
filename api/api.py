@@ -1,11 +1,10 @@
-from re import A
 from time import time
 from flask import Flask, request
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:hellothere@localhost/when-works'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://postgres@localhost/when-works'
 db = SQLAlchemy(app)
 
 class Event(db.Model):
@@ -170,5 +169,7 @@ def delete_guest(event_id, guest_id):
 @app.route('/<event_id>/<guest_id>', methods=['GET'])
 def get_guest(event_id, guest_id):
 	guest = Guest.query.filter_by(id=guest_id).first()
+	if (guest == None or guest.event_id is not event_id):
+		return "This guest either does not exist, or does not belong to this event.\n"
 	return format_guest(guest)
 
