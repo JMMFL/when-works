@@ -4,7 +4,7 @@ from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://postgres@localhost/when-works'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:hellothere@localhost/when-works'
 db = SQLAlchemy(app)
 
 class Event(db.Model):
@@ -90,22 +90,23 @@ def create_event():
 	host_name = request.json['host_name']
 	avail_times = request.json['avail_times']
 
-	# create event and add host as guest
 	event = Event(event_name, host_name)
 	db.session.add(event)
 	db.session.commit()
+
+	# add host as guest
 	guest = Guest(host_name, event.id)
-	db.session.add(guest)
-	db.session.commit()
 
 	# add time to database
 	for time in avail_times:
 		tmp_time = Time.query.filter_by(time_id=time).first()
-		if (tmp_time is None): db.session.add(Time(time))
+		if (tmp_time is None):
+			db.session.add(Time(time))
+			tmp_time = Time.query.filter_by(time_id=time).first()
 		guest.available_times.append(tmp_time)
 
-	db.session.commit()
-
+	db.session.add(guest)
+	event.num_guests += 1
 	db.session.commit()
 	return format_event(event)
 
@@ -132,12 +133,13 @@ def create_guest(event_id):
 	#	relationship to join table
 	for time in avail_times:
 		tmp_time = Time.query.filter_by(time_id=time).first()
-		if (tmp_time is None): db.session.add(Time(time))
+		if (tmp_time is None):
+			db.session.add(Time(time))
+			tmp_time = Time.query.filter_by(time_id=time).first()
 		guest.available_times.append(tmp_time)
-	
 
 	db.session.add(guest)
-	event.num_guests += 1
+	# event is initialized with num_guests = 1
 	db.session.commit()
 	return format_guest(guest)
 
@@ -150,6 +152,7 @@ def get_event(event_id):
 @app.route('/<event_id>', methods=['DELETE'])
 def delete_event(event_id):
 	event = Event.query.filter_by(id=event_id).first()
+	if (event is None): return "Event does not exist"
 	guests = Guest.query.filter_by(event_id=event_id)
 	for guest in guests:
 		db.session.delete(guest)
