@@ -1,93 +1,27 @@
-from time import time
-from flask import Flask, request
 from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
-import random, string
+from utils import gen_key
+from db import *
+from flask import request
+from event import Event
+from guest import Guest
+from dbtime import Time
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:hellothere@localhost/when-works'
-db = SQLAlchemy(app)
-
-def gen_key():
-	return ''.join(random.choices(string.ascii_letters + string.digits, k=7))
-
-class Event(db.Model):
-	id = db.Column(db.String(7), default=gen_key(), primary_key=True)
-	event_name = db.Column(db.String(100), nullable=False)
-	host_name = db.Column(db.String(100), nullable=False)
-	created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-	guests = db.relationship('Guest', backref='event')
-
-
-	def __repr__(self):
-		return f"Event: ID = {self.id}, Event Name = {self.event_name}, Host Name = {self.host_name}"
-
-	def __init__(self, event_name, host_name):
-		self.event_name = event_name
-		self.host_name = host_name
-
-	def formatJSON(self):
-		names = []
-		guest_ids = []
-		for guest in self.guests:
-			names.append(guest.name)
-			guest_ids.append(guest.id)
-
-		return {
-			"id": self.id,
-			"event_name": self.event_name,
-			"host_name": self.host_name,
-			"created_at": self.created_at,
-			"guests": names,
-			"guest_ids": guest_ids
-		}
-
-
-guest_time = db.Table('guest_time', 
-	db.Column('guest_id', db.String(7), db.ForeignKey('guest.id')),
-	db.Column('time_id', db.DateTime, db.ForeignKey('time.time_id'))
-)
-
-class Guest(db.Model):
-	id = db.Column(db.String(7), default=gen_key(), primary_key=True)
-	name = db.Column(db.String(100), nullable=False)
-	event_id = db.Column(db.String(7), db.ForeignKey('event.id'), nullable=False)
-	available_times = db.relationship('Time', secondary=guest_time, backref = 'guests')
-
-	def __repr__(self):
-		return f"Guest: ID = {self.id}, Event Name = {self.event_id}, Host Name = {self.name}"
-
-	def __init__(self, name, event_id):
-		self.name = name
-		self.event_id = event_id
-
-	def formatJSON(self):
-		times = []
-		for time in self.available_times:
-			times.append(str(time))
-
-		return {
-			"id": self.id,
-			"guest_name": self.name,
-			"event_id": self.event_id,
-			"event_name": (Event.query.filter_by(id=self.event_id).first()).event_name,
-			"avail_times": times
-	}
-
-
-class Time(db.Model):
-	time_id = db.Column(db.DateTime, primary_key=True, nullable = False)
-
-	def __repr__(self):
-		return f"{self.time_id}"
-
-	def __init__(self, time):
-		self.time_id = time
-
+'''
+Returns the current time
+'''
 @app.route('/time')
 def get_current_time():
 	return {'time': datetime.now()}
 
+'''
+Creates a new event, and returns the JSON format of the event that was created.
+Expects a JSON query in the following format:
+{
+	"event_name":
+	"host_name":
+	"avail_times":
+}
+'''
 @app.route('/create', methods=['POST'])
 def create_event():
 	event_name = request.json['event_name']
@@ -115,6 +49,9 @@ def create_event():
 	db.session.commit()
 	return event.formatJSON()
 
+'''
+Get a JSON of all events
+'''
 @app.route('/event', methods=['GET'])
 def get_events():
 	events = Event.query.order_by(Event.id.asc()).all()
@@ -123,6 +60,14 @@ def get_events():
 		event_list.append(event.formatJSON())
 	return {'events': event_list}
 
+'''
+Creates a new guest, and returns the JSON format of the guest that was created
+Expects a JSON query in the following format:
+{
+	"guest_name":
+	"avail_times":
+}
+'''
 @app.route('/<event_id>', methods=['POST'])
 def create_guest(event_id):
 	event = Event.query.filter_by(id=event_id).first()
@@ -149,12 +94,18 @@ def create_guest(event_id):
 	db.session.commit()
 	return guest.formatJSON()
 
+'''
+Get a JSON of a single element
+'''
 @app.route('/<event_id>', methods=['GET'])
 def get_event(event_id):
 	event = Event.query.filter_by(id=event_id).first()
 	if (event is None): return f"Event ID {event_id} does not exist"
 	return event.formatJSON()
 
+'''
+Get a JSON of a single guest in an event
+'''
 @app.route('/<event_id>/<guest_id>', methods=['GET'])
 def get_guest(event_id, guest_id):
 	guest = Guest.query.filter_by(id=guest_id).first()
@@ -163,6 +114,9 @@ def get_guest(event_id, guest_id):
 
 	return guest.formatJSON()
 
+'''
+Get a JSON of all guests in an event
+'''
 @app.route('/<event_id>/guests', methods=['GET'])
 def get_guests(event_id):
 	event = Event.query.filter_by(id=event_id).first()
@@ -174,6 +128,9 @@ def get_guests(event_id):
 
 	return guest_list
 
+'''
+Delete an event
+'''
 @app.route('/<event_id>', methods=['DELETE'])
 def delete_event(event_id):
 	event = Event.query.filter_by(id=event_id).first()
@@ -188,6 +145,9 @@ def delete_event(event_id):
 
 	return 'Event Removed'
 
+'''
+Delete a guest in an event
+'''
 @app.route('/<event_id>/<guest_id>', methods=['DELETE'])
 def delete_guest(event_id, guest_id):
 	event = Event.query.filter_by(id=event_id).first()
