@@ -164,3 +164,16 @@ def delete_guest(event_id, guest_id):
 	db.session.commit()
 	return 'Guest Removed'
 
+@app.route('/<event_id>/results/', methods=['GET'])
+def get_results(event_id):
+	event = Event.query.filter_by(id=event_id).first()
+	guests = event.guests
+
+	sets = []
+	for guest in guests:
+		sets.append(set(guest.available_times))
+
+	u = set.intersection(*sets)
+	times = list(u)
+	
+	return {"avail_times": str(times)}
