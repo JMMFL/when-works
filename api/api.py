@@ -1,5 +1,4 @@
 from datetime import datetime
-from utils import gen_key
 from db import *
 from flask import request
 from event import Event
