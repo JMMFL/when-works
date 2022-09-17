@@ -1,17 +1,31 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import Calendar from "react-calendar";
+import "./style.css";
 
 export default function App() {
-  const [currentTime, setCurrentTime] = useState(0);
+  const [dates, setDates] = useState([]);
 
-  useEffect(() => {
-    async function getTime() {
-      const response = await fetch("/time");
-      const data = await response.json();
-      setCurrentTime(data.time);
+  const toggleDate = (value) => {
+    const date = value.toJSON();
+    const newDates = dates.includes(date)
+      ? dates.filter((d) => d !== date)
+      : [...dates, date];
+
+    setDates(newDates);
+  };
+
+  const tileClassName = ({ date }) => {
+    if (dates.includes(date.toJSON())) {
+      return "myClass";
     }
+  };
 
-    getTime();
-  }, []);
-
-  return <div>Current time is {currentTime}</div>;
+  return (
+    <>
+      <Calendar onClickDay={toggleDate} tileClassName={tileClassName} />
+      {dates.map((date, index) => (
+        <p key={index}>{date.toString()}</p>
+      ))}
+    </>
+  );
 }
