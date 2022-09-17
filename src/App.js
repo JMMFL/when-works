@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Calendar from "react-calendar";
+import CalendarBtn from "./components/CalendarBtn";
 import "./style.css";
 
 export default function App() {
@@ -23,9 +24,7 @@ export default function App() {
   return (
     <>
       <Calendar onClickDay={toggleDate} tileClassName={tileClassName} />
-      {dates.map((date, index) => (
-        <p key={index}>{date.toString()}</p>
-      ))}
+      <CalendarBtn dateCount={dates.length} onClick={(f) => f} />
     </>
   );
 }
