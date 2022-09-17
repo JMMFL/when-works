@@ -1,29 +1,23 @@
-import { useState } from "react";
-import Calendar from "react-calendar";
-import CalendarBtn from "./components/CalendarBtn";
+import { useReducer, useState } from "react";
+import CalendarPage from "./components/CalendarPage";
 import "./style.css";
-import datesEqual from "./utils/datesEqual";
-import datesInclude from "./utils/datesInclude";
 
 export default function App() {
   const [dates, setDates] = useState([]);
-
-  const toggleDate = (date) => {
-    const dateIsOn = datesInclude(dates, date);
-    const newDates = dateIsOn
-      ? dates.filter((d) => !datesEqual(d, date))
-      : [...dates, date];
-    setDates(newDates);
-  };
-
-  const tileClassName = ({ date }) => {
-    if (datesInclude(dates, date)) return "myClass";
-  };
+  const [datesPicked, setDatesPicked] = useReducer(
+    (datesPicked) => !datesPicked,
+    false
+  );
 
   return (
     <>
-      <Calendar onClickDay={toggleDate} tileClassName={tileClassName} />
-      <CalendarBtn dateCount={dates.length} onClick={(f) => f} />
+      {!datesPicked && (
+        <CalendarPage
+          dates={dates}
+          setDates={setDates}
+          setDatesPicked={setDatesPicked}
+        />
+      )}
     </>
   );
 }
