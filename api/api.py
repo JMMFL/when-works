@@ -3,7 +3,7 @@ from db import *
 from flask import request
 from event import Event
 from guest import Guest
-from dbtime import Time
+from guesttime import GuestTime
 
 '''
 Returns the current time
@@ -29,20 +29,19 @@ def create_event():
 
 	event = Event(event_name, host_name)
 	db.session.add(event)
-	db.session.commit()
+	# db.session.commit()
 
 	# add host as guest
 	guest = Guest(host_name, event.id)
+	event.host_id = guest.id
 
 	# add time to database
 	for time in avail_times:
-		tmp_time = Time.query.filter_by(time_id=time).first()
-		if (tmp_time is None):
-			db.session.add(Time(time))
-			tmp_time = Time.query.filter_by(time_id=time).first()
+		guestTime = GuestTime(guest.id, event.id, time)
+		db.session.add(guestTime)
 
 		# add relationship to join table
-		guest.available_times.append(tmp_time)
+		guest.available_times.append(guestTime)
 
 	db.session.add(guest)
 	db.session.commit()
@@ -80,14 +79,11 @@ def create_guest(event_id):
 
 	# add time to database
 	for time in avail_times:
-		# query if this time exists in the time database
-		tmp_time = Time.query.filter_by(time_id=time).first()
-		if (tmp_time is None):
-			db.session.add(Time(time))
-			tmp_time = Time.query.filter_by(time_id=time).first()
+		guestTime = GuestTime(guest.id, event.id, time)
+		db.session.add(guestTime)
 
 		# add relationship to join table
-		guest.available_times.append(tmp_time)
+		guest.available_times.append(guestTime)
 
 	db.session.add(guest)
 	db.session.commit()
@@ -137,6 +133,8 @@ def delete_event(event_id):
 	guests = Guest.query.filter_by(event_id=event_id)
 
 	for guest in guests:
+		for guesttime in guest.available_times:
+			db.session.delete(guesttime)
 		db.session.delete(guest)
 
 	db.session.delete(event)
@@ -158,6 +156,9 @@ def delete_guest(event_id, guest_id):
 
 	if (guest.event_id != event_id):
 		return 'Guest does not belong to this event'
+
+	for guesttime in guest.available_times:
+		db.session.delete(guesttime)
 
 	db.session.delete(guest)
 	db.session.commit()
