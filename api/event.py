@@ -24,9 +24,13 @@ class Event(db.Model):
 	def formatJSON(self):
 		names = []
 		guest_ids = []
+		guest_times = []
+		
 		for guest in self.guests:
 			names.append(guest.name)
 			guest_ids.append(guest.id)
+			for time in guest.available_times:
+				guest_times.append(str(time))
 
 		return {
 			"id": self.id,
@@ -34,5 +38,6 @@ class Event(db.Model):
 			"host_name": self.host_name,
 			"created_at": self.created_at,
 			"guests": names,
-			"guest_ids": guest_ids
+			"guest_ids": guest_ids,
+			"guest_times": guest_times
 		}

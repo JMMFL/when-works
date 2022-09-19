@@ -9,7 +9,7 @@ class GuestTime(db.Model):
 	time = db.Column(db.DateTime, nullable=False)
 
 	def __repr__(self):
-		return f"Guest: ID = {self.id}, Event ID = {self.event_id}, Time = {str(self.time)}"
+		return f"Guest ID = {self.guest_id}, Event ID = {self.event_id}, Time = {str(self.time)}"
 
 	def __init__(self, guest_id, event_id, time):
 		self.guest_id = guest_id

@@ -171,8 +171,11 @@ def get_results(event_id):
 
 	sets = []
 	for guest in guests:
-		sets.append(set(guest.available_times))
-
+		times = []
+		for time in guest.available_times:
+			times.append(str(time.time))
+		sets.append(set(times))
+	print(sets)
 	u = set.intersection(*sets)
 	times = list(u)
 	
