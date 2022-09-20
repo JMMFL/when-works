@@ -123,6 +123,27 @@ def get_guests(event_id):
 
 	return guest_list
 
+@app.route('/<event_id>/update/<guest_id>', methods=['PUT'])
+def update_guest(event_id, guest_id):
+	event = Event.query.filter_by(id=event_id).first()
+	if (event == None): return "Event does not exist."
+
+	guest = Guest.query.filter_by(id=guest_id).first()
+	if (guest == None): return "Guest does not exist."
+
+	updated_times = request.json['avail_times']
+
+	for guesttime in guest.available_times:
+		db.session.delete(guesttime)
+
+	for time in updated_times:
+		guestTime = GuestTime(guest.id, event.id, time)
+		db.session.add(guestTime)
+
+	db.session.commit()
+
+	return guest.formatJSON()
+
 '''
 Delete an event
 '''
