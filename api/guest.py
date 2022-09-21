@@ -1,5 +1,5 @@
 from db import *
-from utils import *
+from utils import gen_key
 from event import Event
 
 class Guest(db.Model):

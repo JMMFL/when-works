@@ -1,5 +1,5 @@
+from utils import gen_key
 from db import *
-from utils import *
 from datetime import datetime
 
 class Event(db.Model):

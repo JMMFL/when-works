@@ -209,5 +209,6 @@ def get_results(event_id):
 	
 	u = set.intersection(*sets)
 	times = list(u)
+	times.sort()
 	
 	return {"avail_times": str(times)}
