@@ -1,4 +1,5 @@
-from datetime import datetime
+from datetime import date, datetime, timedelta
+from utils import datetime_range
 from db import *
 from flask import request
 from event import Event
@@ -18,8 +19,9 @@ Expects a JSON query in the following format:
 {
 	"event_name":
 	"host_name":
-	"avail_times":
+	"avail_times": [[start_time1, end_time1], [start_time2 end_time2], ...]
 }
+Make sure the times are in ISO 8601 format
 '''
 @app.route('/create', methods=['POST'])
 def create_event():
@@ -35,13 +37,16 @@ def create_event():
 	guest = Guest(host_name, event.id)
 	event.host_id = guest.id
 
-	# add time to database
-	for time in avail_times:
-		guestTime = GuestTime(guest.id, event.id, time)
-		db.session.add(guestTime)
+	for time_frame in avail_times:
+		start_time = datetime.fromisoformat(time_frame[0])
+		end_time = datetime.fromisoformat(time_frame[1])
+		
+		expanded_time_frame = datetime_range(start_time, end_time, timedelta(minutes=30))
 
-		# add relationship to join table
-		guest.available_times.append(guestTime)
+		for time in expanded_time_frame:
+			guestTime = GuestTime(guest.id, event.id, time)
+			db.session.add(guestTime)
+			guest.available_times.append(guestTime)
 
 	db.session.add(guest)
 	db.session.commit()
@@ -63,8 +68,9 @@ Creates a new guest, and returns the JSON format of the guest that was created
 Expects a JSON query in the following format:
 {
 	"guest_name":
-	"avail_times":
+	"avail_times": [[start_time1, end_time1], [start_time2 end_time2], ...]
 }
+Make sure the times are in ISO 8601 format
 '''
 @app.route('/<event_id>', methods=['POST'])
 def create_guest(event_id):
@@ -77,13 +83,16 @@ def create_guest(event_id):
 	# add guest to database
 	guest = Guest(name, event_id)
 
-	# add time to database
-	for time in avail_times:
-		guestTime = GuestTime(guest.id, event.id, time)
-		db.session.add(guestTime)
+	for time_frame in avail_times:
+		start_time = datetime.fromisoformat(time_frame[0])
+		end_time = datetime.fromisoformat(time_frame[1])
+		
+		expanded_time_frame = datetime_range(start_time, end_time, timedelta(minutes=30))
 
-		# add relationship to join table
-		guest.available_times.append(guestTime)
+		for time in expanded_time_frame:
+			guestTime = GuestTime(guest.id, event.id, time)
+			db.session.add(guestTime)
+			guest.available_times.append(guestTime)
 
 	db.session.add(guest)
 	db.session.commit()
@@ -96,6 +105,7 @@ Get a JSON of a single element
 def get_event(event_id):
 	event = Event.query.filter_by(id=event_id).first()
 	if (event is None): return f"Event ID {event_id} does not exist"
+
 	return event.formatJSON()
 
 '''
@@ -196,7 +206,7 @@ def get_results(event_id):
 		for time in guest.available_times:
 			times.append(str(time.time))
 		sets.append(set(times))
-	print(sets)
+	
 	u = set.intersection(*sets)
 	times = list(u)
 	
