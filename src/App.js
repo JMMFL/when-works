@@ -1,17 +1,23 @@
-import { useEffect, useState } from "react";
+import { useReducer, useState } from "react";
+import CalendarPage from "./components/CalendarPage";
+import "./style.css";
 
 export default function App() {
-  const [currentTime, setCurrentTime] = useState(0);
+  const [dates, setDates] = useState([]);
+  const [datesPicked, setDatesPicked] = useReducer(
+    (datesPicked) => !datesPicked,
+    false
+  );
 
-  useEffect(() => {
-    async function getTime() {
-      const response = await fetch("/time");
-      const data = await response.json();
-      setCurrentTime(data.time);
-    }
-
-    getTime();
-  }, []);
-
-  return <div>Current time is {currentTime}</div>;
+  return (
+    <>
+      {!datesPicked && (
+        <CalendarPage
+          dates={dates}
+          setDates={setDates}
+          setDatesPicked={setDatesPicked}
+        />
+      )}
+    </>
+  );
 }
