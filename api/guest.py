@@ -1,18 +1,16 @@
-from typing import Collection
 from db import *
 from utils import *
 from event import Event
-from datetime import datetime
 
 class Guest(db.Model):
 	key = db.Column(db.Integer, primary_key=True)
 	id = db.Column(db.String(7), nullable=False, unique=True)
 	name = db.Column(db.String(100), nullable=False)
 	event_id = db.Column(db.String(7), db.ForeignKey('event.id'), nullable=False)
-	available_times = db.relationship('Time', secondary=guest_time, backref = 'guests')
+	available_times = db.relationship('GuestTime', backref = 'guests')
 
 	def __repr__(self):
-		return f"Guest: ID = {self.id}, Event Name = {self.event_id}, Host Name = {self.name}"
+		return f"Guest: ID = {self.id}, Event ID = {self.event_id}, Host Name = {self.name}"
 
 	def __init__(self, name, event_id):
 		self.name = name

@@ -1,9 +1,10 @@
-from datetime import datetime
+from datetime import date, datetime, timedelta
+from utils import datetime_range
 from db import *
 from flask import request
 from event import Event
 from guest import Guest
-from dbtime import Time
+from guesttime import GuestTime
 
 '''
 Returns the current time
@@ -18,8 +19,9 @@ Expects a JSON query in the following format:
 {
 	"event_name":
 	"host_name":
-	"avail_times":
+	"avail_times": [[start_time1, end_time1], [start_time2 end_time2], ...]
 }
+Make sure the times are in ISO 8601 format
 '''
 @app.route('/create', methods=['POST'])
 def create_event():
@@ -29,20 +31,22 @@ def create_event():
 
 	event = Event(event_name, host_name)
 	db.session.add(event)
-	db.session.commit()
+	# db.session.commit()
 
 	# add host as guest
 	guest = Guest(host_name, event.id)
+	event.host_id = guest.id
 
-	# add time to database
-	for time in avail_times:
-		tmp_time = Time.query.filter_by(time_id=time).first()
-		if (tmp_time is None):
-			db.session.add(Time(time))
-			tmp_time = Time.query.filter_by(time_id=time).first()
+	for time_frame in avail_times:
+		start_time = datetime.fromisoformat(time_frame[0])
+		end_time = datetime.fromisoformat(time_frame[1])
+		
+		expanded_time_frame = datetime_range(start_time, end_time, timedelta(minutes=30))
 
-		# add relationship to join table
-		guest.available_times.append(tmp_time)
+		for time in expanded_time_frame:
+			guestTime = GuestTime(guest.id, event.id, time)
+			db.session.add(guestTime)
+			guest.available_times.append(guestTime)
 
 	db.session.add(guest)
 	db.session.commit()
@@ -64,8 +68,9 @@ Creates a new guest, and returns the JSON format of the guest that was created
 Expects a JSON query in the following format:
 {
 	"guest_name":
-	"avail_times":
+	"avail_times": [[start_time1, end_time1], [start_time2 end_time2], ...]
 }
+Make sure the times are in ISO 8601 format
 '''
 @app.route('/<event_id>', methods=['POST'])
 def create_guest(event_id):
@@ -78,16 +83,16 @@ def create_guest(event_id):
 	# add guest to database
 	guest = Guest(name, event_id)
 
-	# add time to database
-	for time in avail_times:
-		# query if this time exists in the time database
-		tmp_time = Time.query.filter_by(time_id=time).first()
-		if (tmp_time is None):
-			db.session.add(Time(time))
-			tmp_time = Time.query.filter_by(time_id=time).first()
+	for time_frame in avail_times:
+		start_time = datetime.fromisoformat(time_frame[0])
+		end_time = datetime.fromisoformat(time_frame[1])
+		
+		expanded_time_frame = datetime_range(start_time, end_time, timedelta(minutes=30))
 
-		# add relationship to join table
-		guest.available_times.append(tmp_time)
+		for time in expanded_time_frame:
+			guestTime = GuestTime(guest.id, event.id, time)
+			db.session.add(guestTime)
+			guest.available_times.append(guestTime)
 
 	db.session.add(guest)
 	db.session.commit()
@@ -100,6 +105,7 @@ Get a JSON of a single element
 def get_event(event_id):
 	event = Event.query.filter_by(id=event_id).first()
 	if (event is None): return f"Event ID {event_id} does not exist"
+
 	return event.formatJSON()
 
 '''
@@ -127,6 +133,27 @@ def get_guests(event_id):
 
 	return guest_list
 
+@app.route('/<event_id>/update/<guest_id>', methods=['PUT'])
+def update_guest(event_id, guest_id):
+	event = Event.query.filter_by(id=event_id).first()
+	if (event == None): return "Event does not exist."
+
+	guest = Guest.query.filter_by(id=guest_id).first()
+	if (guest == None): return "Guest does not exist."
+
+	updated_times = request.json['avail_times']
+
+	for guesttime in guest.available_times:
+		db.session.delete(guesttime)
+
+	for time in updated_times:
+		guestTime = GuestTime(guest.id, event.id, time)
+		db.session.add(guestTime)
+
+	db.session.commit()
+
+	return guest.formatJSON()
+
 '''
 Delete an event
 '''
@@ -137,6 +164,8 @@ def delete_event(event_id):
 	guests = Guest.query.filter_by(event_id=event_id)
 
 	for guest in guests:
+		for guesttime in guest.available_times:
+			db.session.delete(guesttime)
 		db.session.delete(guest)
 
 	db.session.delete(event)
@@ -159,6 +188,9 @@ def delete_guest(event_id, guest_id):
 	if (guest.event_id != event_id):
 		return 'Guest does not belong to this event'
 
+	for guesttime in guest.available_times:
+		db.session.delete(guesttime)
+
 	db.session.delete(guest)
 	db.session.commit()
 	return 'Guest Removed'
@@ -170,8 +202,11 @@ def get_results(event_id):
 
 	sets = []
 	for guest in guests:
-		sets.append(set(guest.available_times))
-
+		times = []
+		for time in guest.available_times:
+			times.append(str(time.time))
+		sets.append(set(times))
+	
 	u = set.intersection(*sets)
 	times = list(u)
 	
