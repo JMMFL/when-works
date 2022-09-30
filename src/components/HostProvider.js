@@ -19,6 +19,18 @@ function reducer(state, action) {
       break;
     }
 
+    case "AddTimeBlock": {
+      const { id } = action.payload;
+      newState = { ...state, [id]: [...state[id], new TimeBlock()] };
+      break;
+    }
+
+    case "DelTimeBlock": {
+      const { id, index } = action.payload;
+      newState = { ...state, [id]: state[id].filter((_, i) => i !== index) };
+      break;
+    }
+
     case "UpdateTime": {
       const { id, index, type, values } = action.payload;
       const stateCopy = { ...state };
