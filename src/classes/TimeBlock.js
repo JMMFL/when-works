@@ -1,8 +1,8 @@
 import Time from "./Time";
 
 export default class TimeBlock {
-  constructor() {
-    this.start = new Time("start");
-    this.end = new Time("end");
+  constructor(initialHour = 6) {
+    this.start = new Time("start", initialHour);
+    this.end = new Time("end", initialHour + 1);
   }
 }
