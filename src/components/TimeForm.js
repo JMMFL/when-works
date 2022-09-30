@@ -1,4 +1,5 @@
 import useHostContext from "../hooks/useHostContext";
+import timeOptions from "../utils/timeOptions";
 
 export default function TimeForm() {
   const { data } = useHostContext();
@@ -47,7 +48,7 @@ function Input({ id, time, index }) {
       key={unit}
       value={time.values[unit]}
       label={unit}
-      options={time.options[unit]}
+      options={timeOptions[unit]}
       onChange={(value) =>
         setData({
           type: "UpdateTime",
