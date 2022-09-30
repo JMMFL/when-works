@@ -37,13 +37,6 @@ function Card({ id, timeBlocks, setIsFormValid }) {
     setIsFormValid(timeBlocks.every(isTimeValid));
   }, [data, timeBlocks, setIsFormValid]);
 
-  const editTimeBlocks = (index) => {
-    setData({
-      type: index === 0 ? "AddTimeBlock" : "DelTimeBlock",
-      payload: { id, index },
-    });
-  };
-
   return (
     <>
       <h1>{id}</h1>
@@ -60,16 +53,27 @@ function Card({ id, timeBlocks, setIsFormValid }) {
           <Input id={id} time={timeBlock.start} index={index} />
           <h2>To</h2>
           <Input id={id} time={timeBlock.end} index={index} />
-          <button onClick={() => editTimeBlocks(index)}>
-            {index === 0 ? "Add" : "Del"}
-          </button>
+          <EditBtn id={id} index={index} setData={setData} />
         </div>
       ))}
     </>
   );
 }
 
-function Input({ id, time, index }) {
+function EditBtn({ id, index, setData }) {
+  const isFirstBlock = index === 0;
+
+  const editBlock = () => {
+    setData({
+      type: isFirstBlock ? "AddTimeBlock" : "DelTimeBlock",
+      payload: { id, index },
+    });
+  };
+
+  return <button onClick={editBlock}>{isFirstBlock ? "Add" : "Del"}</button>;
+}
+
+function Input({ id, index, time }) {
   const { setData } = useHostContext();
 
   return Object.keys(time.values).map((unit) => (
