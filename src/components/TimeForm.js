@@ -1,16 +1,41 @@
+import { useEffect, useState } from "react";
 import useHostContext from "../hooks/useHostContext";
+import isTimeValid from "../utils/isTimeValid";
 import timeOptions from "../utils/timeOptions";
 
 export default function TimeForm() {
   const { data } = useHostContext();
+  const [isFormValid, setIsFormValid] = useState(true);
 
-  return Object.entries(data).map(([id, timeBlocks]) => (
-    <Card key={id} id={id} timeBlocks={timeBlocks} />
-  ));
+  return (
+    <>
+      {Object.entries(data).map(([id, timeBlocks]) => (
+        <Card
+          key={id}
+          id={id}
+          timeBlocks={timeBlocks}
+          setIsFormValid={setIsFormValid}
+        />
+      ))}
+      <FormBtn isFormValid={isFormValid} onClick={(f) => f} />
+    </>
+  );
 }
 
-function Card({ id, timeBlocks }) {
-  const { setData } = useHostContext();
+function FormBtn({ isFormValid, onClick }) {
+  return (
+    <button disabled={!isFormValid} onClick={onClick}>
+      {isFormValid ? "Confirm" : "Fix Times"}
+    </button>
+  );
+}
+
+function Card({ id, timeBlocks, setIsFormValid }) {
+  const { data, setData } = useHostContext();
+
+  useEffect(() => {
+    setIsFormValid(timeBlocks.every(isTimeValid));
+  }, [data, timeBlocks, setIsFormValid]);
 
   const editTimeBlocks = (index) => {
     setData({
@@ -25,7 +50,11 @@ function Card({ id, timeBlocks }) {
       {timeBlocks.map((timeBlock, index) => (
         <div
           key={index}
-          style={{ display: "flex", justifyContent: "space-between" }}
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            borderBottom: isTimeValid(timeBlock) ? "none" : "4px solid red",
+          }}
         >
           <h2>From</h2>
           <Input id={id} time={timeBlock.start} index={index} />

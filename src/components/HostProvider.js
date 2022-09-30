@@ -8,7 +8,7 @@ function reducer(state, action) {
   switch (action.type) {
     case "AddDateProp": {
       const { id } = action.payload;
-      newState = { ...state, [id]: [new TimeBlock(id)] };
+      newState = { ...state, [id]: [new TimeBlock()] };
       break;
     }
 
