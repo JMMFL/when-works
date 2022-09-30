@@ -24,12 +24,12 @@ export default function CalendarForm() {
   return (
     <>
       <Calendar onClickDay={toggleDate} tileClassName={calendarStyle} />
-      <CalendarBtn dateCount={Object.keys(data).length} onClick={(f) => f} />
+      <FormBtn dateCount={Object.keys(data).length} onClick={(f) => f} />
     </>
   );
 }
 
-function CalendarBtn({ dateCount, onClick }) {
+function FormBtn({ dateCount, onClick }) {
   const noDates = dateCount === 0;
 
   return (
