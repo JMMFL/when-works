@@ -3,7 +3,7 @@ import useHostContext from "../hooks/useHostContext";
 import isTimeValid from "../utils/isTimeValid";
 import timeOptions from "../utils/timeOptions";
 
-export default function TimeForm() {
+export default function TimeForm({ setDisplay }) {
   const { data } = useHostContext();
   const [isFormValid, setIsFormValid] = useState(true);
 
@@ -17,7 +17,11 @@ export default function TimeForm() {
           setIsFormValid={setIsFormValid}
         />
       ))}
-      <FormBtn isFormValid={isFormValid} onClick={(f) => f} />
+      <button onClick={() => setDisplay("ToggleForms")}>Back</button>
+      <FormBtn
+        isFormValid={isFormValid}
+        onClick={() => setDisplay("ShowSubmitMessage")}
+      />
     </>
   );
 }
