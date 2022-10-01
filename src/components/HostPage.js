@@ -34,7 +34,7 @@ function reducer(state, action) {
 }
 
 export default function HostPage() {
-  const [{ display }, setDisplay] = useReducer(reducer, {
+  const [display, setDisplay] = useReducer(reducer, {
     calendar: true,
     times: false,
     submit: false,
