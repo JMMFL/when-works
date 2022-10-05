@@ -1,4 +1,5 @@
 import useHostContext from "../hooks/useHostContext";
+import getTimeEntries from "../utils/getTimeEntries";
 
 export default function SubmitMessage() {
   const { data } = useHostContext();
@@ -7,7 +8,7 @@ export default function SubmitMessage() {
   return (
     <>
       <h1>Thank you for your time</h1>
-      {Object.entries(data.availableTimes).map(([id, timeBlocks]) => (
+      {getTimeEntries(data).map(([id, timeBlocks]) => (
         <div key={id}>
           <h2>{id}</h2>
           {timeBlocks.map(({ start, end }, index) => (

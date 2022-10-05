@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import useHostContext from "../hooks/useHostContext";
+import getTimeEntries from "../utils/getTimeEntries";
 import isTimeValid from "../utils/isTimeValid";
 import timeOptions from "../utils/timeOptions";
 
@@ -9,7 +10,7 @@ export default function TimeForm({ setDisplay }) {
 
   return (
     <>
-      {Object.entries(data.availableTimes).map(([id, timeBlocks]) => (
+      {getTimeEntries(data).map(([id, timeBlocks]) => (
         <Card
           key={id}
           id={id}

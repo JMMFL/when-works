@@ -1,5 +1,6 @@
 import { Calendar } from "react-calendar";
 import useHostContext from "../hooks/useHostContext";
+import getTimeKeys from "../utils/getTimeKeys";
 import hasDateProp from "../utils/hasDateProp";
 
 export default function CalendarForm({ setDisplay }) {
@@ -25,7 +26,7 @@ export default function CalendarForm({ setDisplay }) {
     <>
       <Calendar onClickDay={toggleDate} tileClassName={calendarStyle} />
       <FormBtn
-        dateCount={Object.keys(data.availableTimes).length}
+        dateCount={getTimeKeys(data).length}
         onClick={() => setDisplay("ToggleForms")}
       />
     </>
