@@ -6,6 +6,20 @@ export const HostContext = createContext();
 function reducer(state, action) {
   let newState;
   switch (action.type) {
+    case "ChangeDetails": {
+      const { hostName, eventName, location, note } = action.payload;
+
+      const newDetails = {
+        hostName: hostName ?? state.hostName,
+        eventName: eventName ?? state.eventName,
+        location: location ?? state.location,
+        note: note ?? state.note,
+      };
+
+      newState = { ...state, ...newDetails };
+      break;
+    }
+
     case "AddDateProp": {
       const { id } = action.payload;
       const newTimes = { ...state.availableTimes, [id]: [new TimeBlock()] };
@@ -59,6 +73,10 @@ function reducer(state, action) {
 
 export default function HostProvider({ children }) {
   const [data, setData] = useReducer(reducer, {
+    hostName: "",
+    eventName: "",
+    location: "",
+    note: "",
     availableTimes: {},
   });
 

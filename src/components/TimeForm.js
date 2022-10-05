@@ -18,11 +18,8 @@ export default function TimeForm({ setDisplay }) {
           setIsFormValid={setIsFormValid}
         />
       ))}
-      <button onClick={() => setDisplay("ToggleForms")}>Back</button>
-      <FormBtn
-        isFormValid={isFormValid}
-        onClick={() => setDisplay("ShowSubmitMessage")}
-      />
+      <button onClick={() => setDisplay("calendar")}>Back</button>
+      <FormBtn isFormValid={isFormValid} onClick={() => setDisplay("submit")} />
     </>
   );
 }
