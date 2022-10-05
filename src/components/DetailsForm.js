@@ -8,7 +8,7 @@ export default function DetailsForm({ setDisplay }) {
 
   const submit = (event) => {
     event.preventDefault();
-    setDisplay("calendar");
+    setDisplay.next();
   };
 
   return (

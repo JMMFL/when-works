@@ -25,10 +25,10 @@ export default function CalendarForm({ setDisplay }) {
   return (
     <>
       <Calendar onClickDay={toggleDate} tileClassName={calendarStyle} />
-      <button onClick={() => setDisplay("details")}>Back</button>
+      <button onClick={() => setDisplay.previous()}>Back</button>
       <FormBtn
         dateCount={getTimeKeys(data).length}
-        onClick={() => setDisplay("time")}
+        onClick={() => setDisplay.next()}
       />
     </>
   );
