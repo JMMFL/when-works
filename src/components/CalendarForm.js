@@ -25,7 +25,7 @@ export default function CalendarForm({ setDisplay }) {
     <>
       <Calendar onClickDay={toggleDate} tileClassName={calendarStyle} />
       <FormBtn
-        dateCount={Object.keys(data).length}
+        dateCount={Object.keys(data.availableTimes).length}
         onClick={() => setDisplay("ToggleForms")}
       />
     </>

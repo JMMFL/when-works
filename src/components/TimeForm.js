@@ -9,7 +9,7 @@ export default function TimeForm({ setDisplay }) {
 
   return (
     <>
-      {Object.entries(data).map(([id, timeBlocks]) => (
+      {Object.entries(data.availableTimes).map(([id, timeBlocks]) => (
         <Card
           key={id}
           id={id}

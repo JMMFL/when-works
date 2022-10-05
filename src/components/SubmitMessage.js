@@ -7,7 +7,7 @@ export default function SubmitMessage() {
   return (
     <>
       <h1>Thank you for your time</h1>
-      {Object.entries(data).map(([id, timeBlocks]) => (
+      {Object.entries(data.availableTimes).map(([id, timeBlocks]) => (
         <div key={id}>
           <h2>{id}</h2>
           {timeBlocks.map(({ start, end }, index) => (
