@@ -10,7 +10,7 @@ class Event(db.Model):
 	host_id = db.Column(db.String(7), unique=True)
 	created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 	guests = db.relationship('Guest', backref='event')
-	guesttimes = db.relationship('GuestTime', backref='event')
+	available_times = db.relationship('GuestTime', backref='event')
 
 
 	def __repr__(self):

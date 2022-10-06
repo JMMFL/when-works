@@ -133,6 +133,41 @@ def get_guests(event_id):
 
 	return guest_list
 
+@app.route('/<event_id>/update/<host_id>', methods=['PUT'])
+def update_event(event_id, host_id):
+	event = Event.query.filter_by(id=event_id).first()
+	if (event == None): return "Event does not exist."
+
+	host = Guest.query.filter_by(id=host_id).first()
+	if (host == None or event.host_id != host_id): return "Incorrect host id."
+
+	updated_times = request.json['avail_times']
+
+	for host_time in host.available_times:
+		db.session.delete(host_time)
+
+	for time_frame in updated_times:
+		start_time = datetime.fromisoformat(time_frame[0])
+		end_time = datetime.fromisoformat(time_frame[1])
+		
+		expanded_time_frame = datetime_range(start_time, end_time, timedelta(minutes=30))
+
+		for time in expanded_time_frame:
+			host_time = GuestTime(host_id, event_id, time)
+			db.session.add(host_time)
+			host.available_times.append(host_time)
+
+	# if any of the other guests' times are not in the range same
+	#	as the host times, delete it
+
+	# for guest in event.guests:
+	# 	delete_flag = False
+	# 	for time in guest.available_times:
+	# 		for time_frame in updated_times:
+	# 			if time < 
+	
+	pass
+
 @app.route('/<event_id>/update/<guest_id>', methods=['PUT'])
 def update_guest(event_id, guest_id):
 	event = Event.query.filter_by(id=event_id).first()
@@ -143,12 +178,19 @@ def update_guest(event_id, guest_id):
 
 	updated_times = request.json['avail_times']
 
-	for guesttime in guest.available_times:
-		db.session.delete(guesttime)
+	for guest_time in guest.available_times:
+		db.session.delete(guest_time)
 
-	for time in updated_times:
-		guestTime = GuestTime(guest.id, event.id, time)
-		db.session.add(guestTime)
+	for time_frame in updated_times:
+		start_time = datetime.fromisoformat(time_frame[0])
+		end_time = datetime.fromisoformat(time_frame[1])
+		
+		expanded_time_frame = datetime_range(start_time, end_time, timedelta(minutes=30))
+
+		for time in expanded_time_frame:
+			guest_time = GuestTime(guest_id, event_id, time)
+			db.session.add(guest_time)
+			guest.available_times.append(guest_time)
 
 	db.session.commit()
 
@@ -164,8 +206,8 @@ def delete_event(event_id):
 	guests = Guest.query.filter_by(event_id=event_id)
 
 	for guest in guests:
-		for guesttime in guest.available_times:
-			db.session.delete(guesttime)
+		for guest_time in guest.available_times:
+			db.session.delete(guest_time)
 		db.session.delete(guest)
 
 	db.session.delete(event)
@@ -188,8 +230,8 @@ def delete_guest(event_id, guest_id):
 	if (guest.event_id != event_id):
 		return 'Guest does not belong to this event'
 
-	for guesttime in guest.available_times:
-		db.session.delete(guesttime)
+	for guest_time in guest.available_times:
+		db.session.delete(guest_time)
 
 	db.session.delete(guest)
 	db.session.commit()
