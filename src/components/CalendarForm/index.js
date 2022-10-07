@@ -1,7 +1,7 @@
 import { Calendar } from "react-calendar";
-import useHostContext from "../hooks/useHostContext";
-import getTimeKeys from "../utils/getTimeKeys";
-import hasDateProp from "../utils/hasDateProp";
+import useHostContext from "../../hooks/useHostContext";
+import getTimeKeys from "../../utils/getTimeKeys";
+import hasDateProp from "../../utils/hasDateProp";
 
 export default function CalendarForm({ setDisplay }) {
   const { data, setData } = useHostContext();

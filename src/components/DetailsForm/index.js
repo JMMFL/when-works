@@ -1,4 +1,4 @@
-import useHostContext from "../hooks/useHostContext";
+import useHostContext from "../../hooks/useHostContext";
 
 export default function DetailsForm({ setDisplay }) {
   const { data, setData } = useHostContext();

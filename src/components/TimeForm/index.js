@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import useHostContext from "../hooks/useHostContext";
-import getTimeEntries from "../utils/getTimeEntries";
-import isTimeValid from "../utils/isTimeValid";
-import timeOptions from "../utils/timeOptions";
+import useHostContext from "../../hooks/useHostContext";
+import getTimeEntries from "../../utils/getTimeEntries";
+import isTimeValid from "../../utils/isTimeValid";
+import timeOptions from "../../data/time-options";
 
 export default function TimeForm({ setDisplay }) {
   const { data } = useHostContext();

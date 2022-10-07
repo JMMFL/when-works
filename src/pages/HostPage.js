@@ -1,8 +1,8 @@
 import { useCallback, useMemo, useState } from "react";
-import CalendarForm from "./CalendarForm";
-import DetailsForm from "./DetailsForm";
-import SubmitMessage from "./SubmitMessage";
-import TimeForm from "./TimeForm";
+import CalendarForm from "../components/CalendarForm";
+import DetailsForm from "../components/DetailsForm";
+import SubmitMessage from "../components/SubmitMessage";
+import TimeForm from "../components/TimeForm";
 
 export default function HostPage() {
   const [display, setDisplay] = useIterator([

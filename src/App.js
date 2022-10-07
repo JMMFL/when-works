@@ -1,5 +1,5 @@
-import HostPage from "./components/HostPage";
-import HostProvider from "./components/HostProvider";
+import HostPage from "./pages/HostPage";
+import HostProvider from "./providers/HostProvider";
 import "./style.css";
 
 export default function App() {

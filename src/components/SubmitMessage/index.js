@@ -1,5 +1,5 @@
-import useHostContext from "../hooks/useHostContext";
-import getTimeEntries from "../utils/getTimeEntries";
+import useHostContext from "../../hooks/useHostContext";
+import getTimeEntries from "../../utils/getTimeEntries";
 
 export default function SubmitMessage() {
   const { data } = useHostContext();
