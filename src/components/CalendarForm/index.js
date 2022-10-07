@@ -22,24 +22,17 @@ export default function CalendarForm({ setDisplay }) {
     }
   };
 
+  const dateCount = getTimeKeys(data).length;
+  const isDatePicked = dateCount > 0;
+
   return (
     <>
       <Calendar onClickDay={toggleDate} tileClassName={calendarStyle} />
+      <p>{isDatePicked ? `${dateCount} Dates Selected` : `Select a Date`}</p>
       <button onClick={() => setDisplay.previous()}>Back</button>
-      <FormBtn
-        dateCount={getTimeKeys(data).length}
-        onClick={() => setDisplay.next()}
-      />
+      <button disabled={!isDatePicked} onClick={() => setDisplay.next()}>
+        Next
+      </button>
     </>
-  );
-}
-
-function FormBtn({ dateCount, onClick }) {
-  const noDates = dateCount === 0;
-
-  return (
-    <button disabled={noDates} onClick={onClick}>
-      {noDates ? `Select A Date` : `${dateCount} Dates Selected`}
-    </button>
   );
 }
