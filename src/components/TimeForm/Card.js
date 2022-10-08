@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import useHostContext from "../../hooks/useHostContext";
 import TimeBlockList from "./TimeBlockList";
 
