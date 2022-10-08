@@ -22,7 +22,7 @@ function reducer(state, action) {
 
     case "AddDateProp": {
       const { id } = action.payload;
-      const newTimes = { ...state.availableTimes, [id]: [new TimeBlock()] };
+      const newTimes = { ...state.availableTimes, [id]: [new TimeBlock(id)] };
       newState = { ...state, availableTimes: newTimes };
       break;
     }
@@ -38,7 +38,7 @@ function reducer(state, action) {
       const { id } = action.payload;
       const newTimes = {
         ...state.availableTimes,
-        [id]: [...state.availableTimes[id], new TimeBlock()],
+        [id]: [...state.availableTimes[id], new TimeBlock(id)],
       };
 
       newState = { ...state, availableTimes: newTimes };
