@@ -36,6 +36,7 @@ function reducer(state, action) {
 
     case "AddTimeBlock": {
       const { id } = action.payload;
+
       const newTimes = {
         ...state.availableTimes,
         [id]: [...state.availableTimes[id], new TimeBlock(id)],
@@ -45,8 +46,20 @@ function reducer(state, action) {
       break;
     }
 
+    case "AddMasterTimeBlock": {
+      const { id } = action.payload;
+
+      newState = {
+        ...state,
+        masterTimes: [...state.masterTimes, new TimeBlock(id)],
+      };
+
+      break;
+    }
+
     case "DelTimeBlock": {
       const { id, index } = action.payload;
+
       const newTimes = {
         ...state.availableTimes,
         [id]: state.availableTimes[id].filter((_, i) => i !== index),
@@ -56,11 +69,31 @@ function reducer(state, action) {
       break;
     }
 
+    case "DelMasterTimeBlock": {
+      const { index } = action.payload;
+      const newTimes = state.masterTimes.filter((_, i) => i !== index);
+      newState = { ...state, masterTimes: newTimes };
+      break;
+    }
+
     case "UpdateTime": {
       const { id, index, type, values } = action.payload;
       const stateCopy = { ...state };
       stateCopy.availableTimes[id][index][type].values = values;
       newState = stateCopy;
+      break;
+    }
+
+    case "UpdateMasterTimes": {
+      const { index, type, values } = action.payload;
+      const stateCopy = { ...state };
+      stateCopy.masterTimes[index][type].values = values;
+      newState = stateCopy;
+      break;
+    }
+
+    case "ToggleMasterTimes": {
+      newState = { ...state, masterTimesOn: !state.masterTimesOn };
       break;
     }
 
@@ -78,6 +111,8 @@ export default function HostProvider({ children }) {
     location: "",
     note: "",
     availableTimes: {},
+    masterTimesOn: false,
+    masterTimes: [new TimeBlock("MASTER")],
   });
 
   return (

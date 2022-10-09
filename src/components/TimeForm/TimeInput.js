@@ -3,11 +3,11 @@ import useHostContext from "../../hooks/useHostContext";
 import Dropdown from "./Dropdown";
 
 export default function TimeInput({ id, index, time }) {
-  const { setData } = useHostContext();
+  const { data, setData } = useHostContext();
 
   const onChange = (event) =>
     setData({
-      type: "UpdateTime",
+      type: data.masterTimesOn ? "UpdateMasterTimes" : "UpdateTime",
       payload: {
         id,
         index,

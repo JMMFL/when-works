@@ -1,12 +1,19 @@
 import useHostContext from "../../hooks/useHostContext";
 
 export default function EditBtn({ id, index }) {
-  const { setData } = useHostContext();
+  const {
+    data: { masterTimesOn },
+    setData,
+  } = useHostContext();
+
   const isFirstBlock = index === 0;
 
   const onClick = () => {
+    const addAction = masterTimesOn ? "AddMasterTimeBlock" : "AddTimeBlock";
+    const delAction = masterTimesOn ? "DelMasterTimeBlock" : "DelTimeBlock";
+
     setData({
-      type: isFirstBlock ? "AddTimeBlock" : "DelTimeBlock",
+      type: isFirstBlock ? addAction : delAction,
       payload: { id, index },
     });
   };
