@@ -49,7 +49,12 @@ export default function DetailsForm({ setDisplay }) {
       >
         Note
       </TextField>
-      <input type="submit" value="continue" onClick={submit} />
+      <input
+        type="submit"
+        value="continue"
+        onClick={submit}
+        disabled={!data.hostName || !data.eventName}
+      />
     </form>
   );
 }
