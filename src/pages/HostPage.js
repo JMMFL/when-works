@@ -1,8 +1,8 @@
-import { useCallback, useMemo, useState } from "react";
 import CalendarForm from "../components/CalendarForm";
 import DetailsForm from "../components/DetailsForm";
 import SubmitMessage from "../components/SubmitMessage";
 import TimeForm from "../components/TimeForm";
+import useIterator from "../hooks/useIterator";
 
 export default function HostPage() {
   const [display, setDisplay] = useIterator([
@@ -20,25 +20,4 @@ export default function HostPage() {
       {display === "submit" && <SubmitMessage />}
     </>
   );
-}
-
-function useIterator(array = [], initialIndex = 0) {
-  const [index, setIndex] = useState(initialIndex);
-  const endIndex = array.length - 1;
-
-  const previous = useCallback(() => {
-    if (index > 0) {
-      setIndex(index - 1);
-    }
-  }, [index]);
-
-  const next = useCallback(() => {
-    if (index <= endIndex) {
-      setIndex(index + 1);
-    }
-  }, [index, endIndex]);
-
-  const element = useMemo(() => array[index], [index, array]);
-
-  return [element ?? array[initialIndex], { previous, next }];
 }
