@@ -21,4 +21,8 @@ export default class TimeBlock {
       other.endTime
     );
   }
+
+  isValid() {
+    return this.startTime.toMs() < this.endTime.toMs();
+  }
 }

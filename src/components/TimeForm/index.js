@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import useHostContext from "../../hooks/useHostContext";
-import isTimeValid from "../../utils/isTimeValid";
 import CardList from "./CardList";
 
 export default function TimeForm({ setDisplay }) {
@@ -9,7 +8,7 @@ export default function TimeForm({ setDisplay }) {
 
   useEffect(() => {
     const timeBlocks = data.availableTimes.map((day) => day.timeBlocks).flat();
-    setIsFormValid(timeBlocks.every(isTimeValid));
+    setIsFormValid(timeBlocks.every((timeBlock) => timeBlock.isValid()));
   }, [data]);
 
   return (

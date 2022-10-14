@@ -1,4 +1,3 @@
-import isTimeValid from "../../utils/isTimeValid";
 import EditBtn from "./EditBtn";
 import TimeInput from "./TimeInput";
 
@@ -9,7 +8,7 @@ export default function TimeBlock({ timeBlock }) {
     <li
       style={{
         display: "flex",
-        borderLeft: isTimeValid(timeBlock) ? "none" : "5px solid red",
+        borderLeft: timeBlock.isValid() ? "none" : "5px solid red",
       }}
     >
       <TimeInput dayId={dayId} blockId={blockId} time={startTime} />
