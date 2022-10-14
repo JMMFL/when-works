@@ -1,8 +1,8 @@
 import TimeBlock from "./TimeBlock";
 
 export default function TimeBlockList({ timeBlocks }) {
-  const blocks = timeBlocks.map((timeBlock, index) => (
-    <TimeBlock key={index} index={index} timeBlock={timeBlock} />
+  const blocks = timeBlocks.map((timeBlock) => (
+    <TimeBlock key={timeBlock.blockId} timeBlock={timeBlock} />
   ));
 
   return <ul>{blocks}</ul>;

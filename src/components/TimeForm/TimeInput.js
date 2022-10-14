@@ -2,15 +2,15 @@ import timeOptions from "../../data/timeOptions";
 import useHostContext from "../../hooks/useHostContext";
 import Dropdown from "./Dropdown";
 
-export default function TimeInput({ id, index, time }) {
+export default function TimeInput({ dayId, blockId, time }) {
   const { data, setData } = useHostContext();
 
   const onChange = (event) =>
     setData({
-      type: data.masterTimesOn ? "UpdateMasterTimes" : "UpdateTime",
+      type: data.areTimesSame ? "UpdateTimeForAll" : "UpdateTime",
       payload: {
-        id,
-        index,
+        dayId,
+        blockId,
         type: time.type,
         values: {
           ...time.values,

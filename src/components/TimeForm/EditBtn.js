@@ -1,20 +1,19 @@
 import useHostContext from "../../hooks/useHostContext";
+import getDayById from "../../utils/getDayById";
 
-export default function EditBtn({ id, index }) {
-  const {
-    data: { masterTimesOn },
-    setData,
-  } = useHostContext();
-
-  const isFirstBlock = index === 0;
+export default function EditBtn({ dayId, blockId }) {
+  const { data, setData } = useHostContext();
+  const day = getDayById(dayId, data);
+  const isFirstBlock = day.timeBlocks[0].blockId === blockId;
 
   const onClick = () => {
-    const addAction = masterTimesOn ? "AddMasterTimeBlock" : "AddTimeBlock";
-    const delAction = masterTimesOn ? "DelMasterTimeBlock" : "DelTimeBlock";
+    const [addAction, delAction] = data.areTimesSame
+      ? ["AddTimeBlockToAll", "DelTimeBlockFromAll"]
+      : ["AddTimeBlock", "DelTimeBlock"];
 
     setData({
       type: isFirstBlock ? addAction : delAction,
-      payload: { id, index },
+      payload: { dayId, blockId },
     });
   };
 

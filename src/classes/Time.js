@@ -1,12 +1,26 @@
-export default class Time {
-  constructor(type, initialHour) {
-    this.type = type;
+const DEFAULT_START = {
+  hours: "06",
+  minutes: "00",
+  meridiem: "PM",
+};
 
-    this.values = {
-      hours: `${initialHour}`.padStart(2, "0"),
-      minutes: "00",
-      meridiem: "PM",
-    };
+const DEFAULT_END = {
+  hours: "07",
+  minutes: "00",
+  meridiem: "PM",
+};
+
+export default class Time {
+  constructor(
+    type,
+    values = type === "startTime" ? DEFAULT_START : DEFAULT_END
+  ) {
+    this.type = type;
+    this.values = values;
+  }
+
+  static from(other) {
+    return new Time(other.type, other.values);
   }
 
   toMs() {

@@ -8,7 +8,7 @@ export default function MasterCard() {
     <ul>
       <li>
         <h1>All Dates</h1>
-        <TimeBlockList timeBlocks={data.masterTimes} />
+        <TimeBlockList timeBlocks={data.masterTimes[0].timeBlocks} />
       </li>
     </ul>
   );

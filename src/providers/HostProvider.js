@@ -1,5 +1,10 @@
 import { createContext, useReducer } from "react";
-import TimeBlock from "../classes/TimeBlock";
+import { v4 } from "uuid";
+import Day from "../classes/Day";
+import addTimeBlock from "../utils/addTimeBlock";
+import delTimeBlock from "../utils/delTimeBlock";
+import resetTimeBlocks from "../utils/resetTimeBlocks";
+import updateTimeBlock from "../utils/updateTimeBlock";
 
 export const HostContext = createContext();
 
@@ -20,80 +25,98 @@ function reducer(state, action) {
       break;
     }
 
-    case "AddDateProp": {
-      const { id } = action.payload;
-      const newTimes = { ...state.availableTimes, [id]: [new TimeBlock(id)] };
+    case "AddDay": {
+      const { date } = action.payload;
+      const dateStr = date.toDateString();
+      const newTimes = [...state.availableTimes, new Day(dateStr)];
       newState = { ...state, availableTimes: newTimes };
       break;
     }
 
-    case "DelDateProp": {
-      const { id } = action.payload;
-      const { [id]: _, ...rest } = state.availableTimes;
-      newState = { ...state, availableTimes: rest };
+    case "DeleteDay": {
+      const { date } = action.payload;
+      const dateStr = date.toDateString();
+      const newTimes = state.availableTimes.filter((day) => day.id !== dateStr);
+      newState = { ...state, availableTimes: newTimes };
       break;
     }
 
     case "AddTimeBlock": {
-      const { id } = action.payload;
+      const { dayId } = action.payload;
 
-      const newTimes = {
-        ...state.availableTimes,
-        [id]: [...state.availableTimes[id], new TimeBlock(id)],
-      };
+      const availableTimes = state.availableTimes.map((day) =>
+        day.id === dayId ? addTimeBlock(day) : day
+      );
 
-      newState = { ...state, availableTimes: newTimes };
+      newState = { ...state, availableTimes };
       break;
     }
 
-    case "AddMasterTimeBlock": {
-      const { id } = action.payload;
+    case "AddTimeBlockToAll": {
+      const blockId = v4();
 
-      newState = {
-        ...state,
-        masterTimes: [...state.masterTimes, new TimeBlock(id)],
-      };
+      const availableTimes = state.availableTimes.map((day) =>
+        addTimeBlock(day, blockId)
+      );
 
+      newState = { ...state, availableTimes };
       break;
     }
 
     case "DelTimeBlock": {
-      const { id, index } = action.payload;
+      const { dayId, blockId } = action.payload;
 
-      const newTimes = {
-        ...state.availableTimes,
-        [id]: state.availableTimes[id].filter((_, i) => i !== index),
-      };
+      const availableTimes = state.availableTimes.map((day) =>
+        day.id === dayId ? delTimeBlock(day, blockId) : day
+      );
 
-      newState = { ...state, availableTimes: newTimes };
+      newState = { ...state, availableTimes };
       break;
     }
 
-    case "DelMasterTimeBlock": {
-      const { index } = action.payload;
-      const newTimes = state.masterTimes.filter((_, i) => i !== index);
-      newState = { ...state, masterTimes: newTimes };
+    case "DelTimeBlockFromAll": {
+      const { blockId } = action.payload;
+
+      const availableTimes = state.availableTimes.map((day) =>
+        delTimeBlock(day, blockId)
+      );
+
+      newState = { ...state, availableTimes };
       break;
     }
 
     case "UpdateTime": {
-      const { id, index, type, values } = action.payload;
-      const stateCopy = { ...state };
-      stateCopy.availableTimes[id][index][type].values = values;
-      newState = stateCopy;
+      const { dayId, blockId, type, values } = action.payload;
+
+      const availableTimes = state.availableTimes.map((day) =>
+        day.id === dayId ? updateTimeBlock(day, blockId, type, values) : day
+      );
+
+      newState = { ...state, availableTimes };
       break;
     }
 
-    case "UpdateMasterTimes": {
-      const { index, type, values } = action.payload;
-      const stateCopy = { ...state };
-      stateCopy.masterTimes[index][type].values = values;
-      newState = stateCopy;
+    case "UpdateTimeForAll": {
+      const { blockId, type, values } = action.payload;
+
+      const availableTimes = state.availableTimes.map((day) =>
+        updateTimeBlock(day, blockId, type, values)
+      );
+
+      newState = { ...state, availableTimes };
       break;
     }
 
-    case "ToggleMasterTimes": {
-      newState = { ...state, masterTimesOn: !state.masterTimesOn };
+    case "ToggleAreTimesSame": {
+      const areTimesSame = !state.areTimesSame;
+      const sameBlockId = v4();
+
+      const availableTimes = state.availableTimes.map((day) => {
+        const blockId = areTimesSame ? sameBlockId : v4();
+        return resetTimeBlocks(day, blockId);
+      });
+
+      newState = { ...state, availableTimes, areTimesSame };
       break;
     }
 
@@ -110,9 +133,8 @@ export default function HostProvider({ children }) {
     eventName: "",
     location: "",
     note: "",
-    availableTimes: {},
-    masterTimesOn: false,
-    masterTimes: [new TimeBlock("MASTER")],
+    areTimesSame: false,
+    availableTimes: [],
   });
 
   return (

@@ -1,13 +1,10 @@
-import useHostContext from "../../hooks/useHostContext";
 import TimeBlockList from "./TimeBlockList";
 
-export default function Card({ id }) {
-  const { data } = useHostContext();
-
+export default function Card({ dayId, timeBlocks }) {
   return (
     <li>
-      <h1>{id}</h1>
-      <TimeBlockList timeBlocks={data.availableTimes[id]} />
+      <h1>{dayId}</h1>
+      <TimeBlockList timeBlocks={timeBlocks} />
     </li>
   );
 }

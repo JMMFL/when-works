@@ -1,36 +1,30 @@
 import { Calendar } from "react-calendar";
 import useHostContext from "../../hooks/useHostContext";
-import getDateIds from "../../utils/getDateIds";
-import hasDateProp from "../../utils/hasDateProp";
+import isDaySelected from "../../utils/isDaySelected";
 
 export default function CalendarForm({ setDisplay }) {
   const { data, setData } = useHostContext();
+  const dayCount = data.availableTimes.length;
 
-  const toggleDate = (date) => {
-    const id = date.toDateString();
-
-    if (hasDateProp(data, id)) {
-      setData({ type: "DelDateProp", payload: { id } });
-    } else {
-      setData({ type: "AddDateProp", payload: { id } });
-    }
+  const toggleDay = (date) => {
+    setData({
+      type: isDaySelected(data, date) ? "DeleteDay" : "AddDay",
+      payload: { date },
+    });
   };
 
   const calendarStyle = ({ date }) => {
-    if (hasDateProp(data, date.toDateString())) {
+    if (isDaySelected(data, date)) {
       return "myClass";
     }
   };
 
-  const dateCount = getDateIds(data).length;
-  const isDatePicked = dateCount > 0;
-
   return (
     <>
-      <Calendar onClickDay={toggleDate} tileClassName={calendarStyle} />
-      <p>{isDatePicked ? `${dateCount} Dates Selected` : `Select a Date`}</p>
+      <Calendar onClickDay={toggleDay} tileClassName={calendarStyle} />
+      <p>{dayCount > 0 ? `${dayCount} Dates Selected` : `Select a Date`}</p>
       <button onClick={() => setDisplay.previous()}>Back</button>
-      <button disabled={!isDatePicked} onClick={() => setDisplay.next()}>
+      <button disabled={dayCount === 0} onClick={() => setDisplay.next()}>
         Next
       </button>
     </>
