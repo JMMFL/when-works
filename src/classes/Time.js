@@ -1,19 +1,9 @@
-const DEFAULT_START = {
-  hours: "06",
-  minutes: "00",
-  meridiem: "PM",
-};
-
-const DEFAULT_END = {
-  hours: "07",
-  minutes: "00",
-  meridiem: "PM",
-};
+import { DEFAULT_END_TIME, DEFAULT_START_TIME } from "../data/time";
 
 export default class Time {
   constructor(
     type,
-    values = type === "startTime" ? DEFAULT_START : DEFAULT_END
+    values = type === "startTime" ? DEFAULT_START_TIME : DEFAULT_END_TIME
   ) {
     this.type = type;
     this.values = values;

@@ -1,4 +1,8 @@
-import timeOptions from "../../data/timeOptions";
+import {
+  HOUR_OPTIONS,
+  MERIDIEM_OPTIONS,
+  MINUTE_OPTIONS,
+} from "../../data/time";
 import useHostContext from "../../hooks/useHostContext";
 import Dropdown from "./Dropdown";
 
@@ -24,19 +28,19 @@ export default function TimeInput({ dayId, blockId, time }) {
       <Dropdown
         id="hours"
         value={time.values.hours}
-        options={timeOptions.hours}
+        options={HOUR_OPTIONS}
         onChange={onChange}
       />
       <Dropdown
         id="minutes"
         value={time.values.minutes}
-        options={timeOptions.minutes}
+        options={MINUTE_OPTIONS}
         onChange={onChange}
       />
       <Dropdown
         id="meridiem"
         value={time.values.meridiem}
-        options={timeOptions.meridiem}
+        options={MERIDIEM_OPTIONS}
         onChange={onChange}
       />
     </>
