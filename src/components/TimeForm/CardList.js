@@ -6,12 +6,14 @@ export default function CardList() {
     data: { areTimesSame, availableTimes },
   } = useHostContext();
 
-  const firstDay = availableTimes[0];
-  const firstCard = <Card dayId="All Days" timeBlocks={firstDay.timeBlocks} />;
+  let cards = [];
+  if (areTimesSame) {
+    cards = <Card dayId="All Days" timeBlocks={availableTimes[0].timeBlocks} />;
+  } else {
+    cards = availableTimes.map((day) => (
+      <Card key={day.id} dayId={day.id} timeBlocks={day.timeBlocks} />
+    ));
+  }
 
-  const allCards = availableTimes.map((day) => (
-    <Card key={day.id} dayId={day.id} timeBlocks={day.timeBlocks} />
-  ));
-
-  return <ul>{areTimesSame ? firstCard : allCards}</ul>;
+  return <ul>{cards}</ul>;
 }
