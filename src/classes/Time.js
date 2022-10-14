@@ -1,12 +1,16 @@
-export default class Time {
-  constructor(type, initialHour) {
-    this.type = type;
+import { DEFAULT_END_TIME, DEFAULT_START_TIME } from "../data/time";
 
-    this.values = {
-      hours: `${initialHour}`.padStart(2, "0"),
-      minutes: "00",
-      meridiem: "PM",
-    };
+export default class Time {
+  constructor(
+    type,
+    values = type === "startTime" ? DEFAULT_START_TIME : DEFAULT_END_TIME
+  ) {
+    this.type = type;
+    this.values = values;
+  }
+
+  static from(other) {
+    return new Time(other.type, other.values);
   }
 
   toMs() {
