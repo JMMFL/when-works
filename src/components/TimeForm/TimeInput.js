@@ -8,20 +8,13 @@ import Dropdown from "./Dropdown";
 
 export default function TimeInput({ dayId, blockId, time }) {
   const { data, setData } = useHostContext();
+  const type = data.areTimesSame ? "UpdateTimeForAll" : "UpdateTime";
 
-  const onChange = (event) =>
-    setData({
-      type: data.areTimesSame ? "UpdateTimeForAll" : "UpdateTime",
-      payload: {
-        dayId,
-        blockId,
-        type: time.type,
-        values: {
-          ...time.values,
-          [event.target.id]: event.target.value,
-        },
-      },
-    });
+  const onChange = (event) => {
+    const values = { ...time.values, [event.target.id]: event.target.value };
+    const payload = { dayId, blockId, type: time.type, values };
+    setData({ type, payload });
+  };
 
   return (
     <>
