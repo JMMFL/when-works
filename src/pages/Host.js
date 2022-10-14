@@ -4,7 +4,7 @@ import SubmitMessage from "../components/SubmitMessage";
 import TimeForm from "../components/TimeForm";
 import useIterator from "../hooks/useIterator";
 
-export default function HostPage() {
+export default function Host() {
   const [display, setDisplay] = useIterator([
     "details",
     "calendar",
